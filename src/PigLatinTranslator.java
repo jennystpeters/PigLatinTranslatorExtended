@@ -15,7 +15,7 @@ public class PigLatinTranslator {
         String welcomePrompt = "Welcome to the Pig Latin Translator!";
         String entryPrompt = "Enter a line to be translated: ";
         String continuePrompt = "Translate another line? (y/n) ";
-        String closingPrompt = "Goodbye!";
+        String closingPrompt = "See you later!";
 
         System.out.printf(welcomePrompt + "\n\n");
 
@@ -29,7 +29,7 @@ public class PigLatinTranslator {
             originalSentence = entry.nextLine();
 
             if (!originalSentence.equals("")) {
-                originalSentence.trim().toLowerCase();
+                originalSentence.trim();
 
                 //Use getTranslatedSentence to translate user's sentence to Pig Latin
                 System.out.println(getTranslatedSentence(originalSentence));
@@ -37,7 +37,7 @@ public class PigLatinTranslator {
             System.out.print(continuePrompt);
             keepGoing = entry.nextLine();
         }
-        System.out.print(closingPrompt);
+        System.out.println(closingPrompt + " -- " + getTranslatedSentence(closingPrompt));
     }
 
     public static StringBuilder getTranslatedSentence(String originalSentence) {
@@ -63,9 +63,9 @@ public class PigLatinTranslator {
 
         //Check if the first letter of the word is a vowel (either option below [1 or 2] can be used)
         //Option 1:
-        //if (first.equals("a") || first.equals("e") || first.equals("i") || first.equals("o") || first.equals("u")) {
+        //if (first.equalsIgnoreCase("a") || first.equalsIgnoreCase("e") || first.equalsIgnoreCase("i") || first.equalsIgnoreCase("o") || first.equalsIgnoreCase("u")) {
         //Option 2:
-        if (first.matches("a|e|i|o|u")) {
+        if (first.matches("a|e|i|o|u|A|E|I|O|U")) {
             //If the first letter is a vowel, use setVowelTranslation to translate the word to Pig Latin
             translatedWords = setVowelTranslation(words);
         } else {
@@ -76,22 +76,46 @@ public class PigLatinTranslator {
     }
 
     public static String setVowelTranslation(String words) {
+
+        //Determine word case
+
         //Add "way" to the end of the word
-        String translatedWords = words + "way";
+        String translatedWords = getWordCase(words, (words.concat("way")));
         return translatedWords;
     }
 
     public static String setConsonantTranslation(String words) {
+
+        //Determine word case
+        //FIX ME getWordCase(words);
+
         int i;
         for (i = 0; i < words.length(); i++) {
             //Find how many consonants exist before the first vowel
-            if (words.substring(i, i + 1).matches("a|e|i|o|u")) {
+            if (words.substring(i, i + 1).matches("a|e|i|o|u|A|E|I|O|U")) {
                 //Break out of loop when vowel is found to use the active index value
                 break;
             }
         }
         //Skip consonants preceding the first vowel. Add the skipped consonants and "ay" to end of word.
-        String translatedWords = words.substring(i, words.length()) + words.substring(0, i) + "ay";
+        String translatedWords = getWordCase(words, (words.substring(i, words.length()).concat(words.substring(0, i)).concat("ay")));
         return translatedWords;
+    }
+
+    public static String getWordCase(String originalWord, String wordCase) {
+
+        String caseType;
+
+        if (originalWord.substring(0,originalWord.length()).matches("[A-Z]+")) {
+            //Option 2: else if (wordCase.substring(0, 1).equals(wordCase.substring(0, 1).toUpperCase())) {
+            return wordCase.toUpperCase();
+        }
+        else if (originalWord.substring(0, 1).matches("[A-Z]")) {
+            //First letter is uppercase
+            return wordCase.substring(0,1).toUpperCase().concat(wordCase.substring(1,wordCase.length()).toLowerCase());
+        }
+        else {
+            return wordCase.toLowerCase();
+        }
     }
 }
