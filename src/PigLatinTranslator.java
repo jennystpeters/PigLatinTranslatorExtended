@@ -77,17 +77,12 @@ public class PigLatinTranslator {
 
     public static String setVowelTranslation(String words) {
 
-        //Determine word case
-
         //Add "way" to the end of the word
         String translatedWords = getWordCase(words, (words.concat("way")));
         return translatedWords;
     }
 
     public static String setConsonantTranslation(String words) {
-
-        //Determine word case
-        //FIX ME getWordCase(words);
 
         int i;
         for (i = 0; i < words.length(); i++) {
@@ -103,8 +98,6 @@ public class PigLatinTranslator {
     }
 
     public static String getWordCase(String originalWord, String wordCase) {
-
-        String caseType;
 
         if (originalWord.substring(0,originalWord.length()).matches("[A-Z]+")) {
             //Option 2: else if (wordCase.substring(0, 1).equals(wordCase.substring(0, 1).toUpperCase())) {
