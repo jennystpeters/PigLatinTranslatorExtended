@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * Created by jenny on 6/30/2017.
@@ -42,13 +44,34 @@ public class PigLatinTranslator {
 
     public static StringBuilder getTranslatedSentence(String originalSentence) {
         //Separate user's sentence into array of words
-        String[] words = originalSentence.split("[^\\p{Alpha}]+");
+        String[] words = originalSentence.split("[^\\p{Alpha}\\p{Digit}\\p{Punct}]+");
         StringBuilder translatedSentence = new StringBuilder("");
 
         //Loop through array of words and use getTranslatedWord to translate each to Pig Latin
         for (int i = 0; i < words.length; i++) {
-            //Reassemble words into sentence
-            translatedSentence.append(getTranslatedWord(words[i]));
+
+            String digitSymbolCheck = "[\\p{Digit}#$%&()*@~]";
+
+            Pattern pattern = Pattern.compile(digitSymbolCheck);
+            Matcher matcher = pattern.matcher(words[i]);
+
+            if (matcher.find()) {
+                translatedSentence.append(words[i]);
+            }else if(words[i].contains("'")){
+                translatedSentence.append(getTranslatedWord(words[i]));
+            }
+            else if (words[i].matches(".*\\p{Punct}*.")) {
+                String[] punctuation = words[i].split("[\\p{Alpha}]");
+                words[i] = words[i].replaceAll("\\p{Punct}", "");
+                translatedSentence.append(getTranslatedWord(words[i]));
+                for (int j = 0; j < punctuation.length; j++) {
+                    translatedSentence.append(punctuation[j]);
+                }
+            } else {
+                //Reassemble words into sentence
+                translatedSentence.append(getTranslatedWord(words[i]));
+            }
+
             if (i < words.length - 1) {
                 translatedSentence.append(" ");
             }
@@ -60,6 +83,8 @@ public class PigLatinTranslator {
     public static String getTranslatedWord(String words) {
         String first = words.substring(0, 1);
         String translatedWords;
+
+        //String punctuation = words.("[\\p{Punct}]+");
 
         //Check if the first letter of the word is a vowel (either option below [1 or 2] can be used)
         //Option 1:
@@ -99,15 +124,17 @@ public class PigLatinTranslator {
 
     public static String getWordCase(String originalWord, String wordCase) {
 
-        if (originalWord.substring(0,originalWord.length()).matches("[A-Z]+")) {
-            //Option 2: else if (wordCase.substring(0, 1).equals(wordCase.substring(0, 1).toUpperCase())) {
+        if (originalWord.substring(0, originalWord.length()).matches("\\p{Upper}+")) {
+            //Option 2: if (originalWord.substring(0,originalWord.length()).matches("\\p{Upper}+")) {
+            //Option 3: if (wordCase.substring(0, 1).equals(wordCase.substring(0, 1).toUpperCase())) {
+            //Uppercase word
             return wordCase.toUpperCase();
-        }
-        else if (originalWord.substring(0, 1).matches("[A-Z]")) {
-            //First letter is uppercase
-            return wordCase.substring(0,1).toUpperCase().concat(wordCase.substring(1,wordCase.length()).toLowerCase());
-        }
-        else {
+        } else if (originalWord.substring(0, 1).matches("\\p{Upper}")) {
+            //Option 2: else if (originalWord.substring(0, 1).matches("[A-Z]")) {
+            //Title case word (First letter is uppercase)
+            return wordCase.substring(0, 1).toUpperCase().concat(wordCase.substring(1, wordCase.length()).toLowerCase());
+        } else {
+            //Lowercase word
             return wordCase.toLowerCase();
         }
     }
