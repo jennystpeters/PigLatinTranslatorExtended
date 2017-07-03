@@ -55,11 +55,15 @@ public class PigLatinTranslator {
             Pattern pattern = Pattern.compile(digitSymbolCheck);
             Matcher matcher = pattern.matcher(words[i]);
 
+            //Do not translate if word contains number or symbol
             if (matcher.find()) {
                 translatedSentence.append(words[i]);
-            }else if(words[i].contains("'")){
+            }
+            //Translate contractions
+            else if (words[i].contains("'")) {
                 translatedSentence.append(getTranslatedWord(words[i]));
             }
+            //Allow translation with punctuation - Temporarily split word and punctuation / Translate / Append
             else if (words[i].matches(".*\\p{Punct}*.")) {
                 String[] punctuation = words[i].split("[\\p{Alpha}]");
                 words[i] = words[i].replaceAll("\\p{Punct}", "");
@@ -67,7 +71,9 @@ public class PigLatinTranslator {
                 for (int j = 0; j < punctuation.length; j++) {
                     translatedSentence.append(punctuation[j]);
                 }
-            } else {
+            }
+            //Translate words
+            else {
                 //Reassemble words into sentence
                 translatedSentence.append(getTranslatedWord(words[i]));
             }
@@ -83,8 +89,6 @@ public class PigLatinTranslator {
     public static String getTranslatedWord(String words) {
         String first = words.substring(0, 1);
         String translatedWords;
-
-        //String punctuation = words.("[\\p{Punct}]+");
 
         //Check if the first letter of the word is a vowel (either option below [1 or 2] can be used)
         //Option 1:
@@ -108,8 +112,8 @@ public class PigLatinTranslator {
     }
 
     public static String setConsonantTranslation(String words) {
-
         int i;
+
         for (i = 0; i < words.length(); i++) {
             //Find how many consonants exist before the first vowel
             if (words.substring(i, i + 1).matches("a|e|i|o|u|A|E|I|O|U")) {
