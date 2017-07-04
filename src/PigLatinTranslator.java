@@ -42,7 +42,7 @@ public class PigLatinTranslator {
         System.out.println(closingPrompt + " -- " + getTranslatedSentence(closingPrompt));
     }
 
-    public static StringBuilder getTranslatedSentence(String originalSentence) {
+    public static String getTranslatedSentence(String originalSentence) {
         //Separate user's sentence into array of words
         String[] words = originalSentence.split("[^\\p{Alpha}\\p{Digit}\\p{Punct}]+");
         StringBuilder translatedSentence = new StringBuilder("");
@@ -66,8 +66,10 @@ public class PigLatinTranslator {
             //Allow translation with punctuation - Temporarily split word and punctuation / Translate / Append
             else if (words[i].matches(".*\\p{Punct}*.")) {
                 String[] punctuation = words[i].split("[\\p{Alpha}]");
-                words[i] = words[i].replaceAll("\\p{Punct}", "");
-                translatedSentence.append(getTranslatedWord(words[i]));
+                if(words[i].matches(".*[a-zA-Z].*")) {
+                    words[i] = words[i].replaceAll("\\p{Punct}", "");
+                    translatedSentence.append(getTranslatedWord(words[i]));
+                }
                 for (int j = 0; j < punctuation.length; j++) {
                     translatedSentence.append(punctuation[j]);
                 }
@@ -83,7 +85,7 @@ public class PigLatinTranslator {
             }
         }
         //Return translated sentence to main to output to user
-        return translatedSentence;
+        return translatedSentence.toString();
     }
 
     public static String getTranslatedWord(String words) {
